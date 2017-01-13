@@ -37,4 +37,12 @@ object Main extends App {
 
   println(s"run ended, got ${kills.killmails.size} kills")
 
+  val grouped = kills.killmails
+    .groupBy(_.victim.allianceName) // group the killmails by their alliance
+    .mapValues(_.map(_.zkb.totalValue).sum) // transform all of the killmails by getting their value and summing them
+    .toList.sortBy(_._2).reverse // turn the results into a list, sort by the cost backwards
+  println(grouped)
+
+  // shut down all the http connections
+  client.shutdownNow()
 }
