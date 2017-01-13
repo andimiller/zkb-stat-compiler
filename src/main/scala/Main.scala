@@ -10,8 +10,6 @@ object Main extends App {
 
   implicit val client = PooledHttp1Client(maxTotalConnections = 10)
 
-  println(DateTime.parse("2017-01-01T00:00:00+00:00"))
-
   val request = ZKBRequest(useragent = "zkb-stat-compiler")
     .regionID(10000014)
     .start(DateTime.parse("2017-01-01T00:00:00+00:00"))
@@ -41,7 +39,15 @@ object Main extends App {
     .groupBy(_.victim.allianceName) // group the killmails by their alliance
     .mapValues(_.map(_.zkb.totalValue).sum) // transform all of the killmails by getting their value and summing them
     .toList.sortBy(_._2).reverse // turn the results into a list, sort by the cost backwards
-  println(grouped)
+
+  println("======")
+
+  grouped.take(10) // get the top 10
+    .foreach { item =>
+      val name = item._1
+      val value = item._2
+      println(s"$name, "+f"$value%1.2f") // print out the name then number with a comma between
+  }
 
   // shut down all the http connections
   client.shutdownNow()
